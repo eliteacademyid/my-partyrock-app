@@ -50,6 +50,8 @@ Resources:
   # ── Text Streaming Lambdas ─────────────────────────────────────────────────
   ConceptExplanationFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: ../lambdas/concept_explanation/
       Handler: run.sh
@@ -67,6 +69,8 @@ Resources:
 
   RealWorldExamplesandAnalogiesFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: ../lambdas/real_world_examples/
       Handler: run.sh
@@ -84,6 +88,8 @@ Resources:
 
   KeyTermsVocabularyFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: ../lambdas/key_terms_vocabulary/
       Handler: run.sh
@@ -101,6 +107,8 @@ Resources:
 
   StudyTipsNextStepsFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: ../lambdas/study_tips/
       Handler: run.sh
@@ -118,6 +126,8 @@ Resources:
 
   RelatedConceptstoExploreFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: ../lambdas/related_concepts/
       Handler: run.sh
@@ -135,6 +145,8 @@ Resources:
 
   PracticeQuizFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: ../lambdas/practice_quiz/
       Handler: run.sh
@@ -152,6 +164,8 @@ Resources:
 
   FollowUpQuestionsFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: ../lambdas/follow_up_questions/
       Handler: run.sh
@@ -170,6 +184,8 @@ Resources:
   # ── Image Lambda (buffered, API Gateway) ──────────────────────────────────
   VisualDiagramFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       CodeUri: ../lambdas/visual_diagram/
       Handler: app.handler
