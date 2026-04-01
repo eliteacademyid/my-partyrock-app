@@ -14,7 +14,6 @@ Resources:
   AppBedrockRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: ConceptExplainerBedrockRole
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -52,7 +51,6 @@ Resources:
   ConceptExplanationFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: concept-explainer-concept-explanation
       CodeUri: ../lambdas/concept_explanation/
       Handler: run.sh
       Role: !GetAtt AppBedrockRole.Arn
@@ -70,7 +68,6 @@ Resources:
   RealWorldExamplesandAnalogiesFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: concept-explainer-real-world-examples
       CodeUri: ../lambdas/real_world_examples/
       Handler: run.sh
       Role: !GetAtt AppBedrockRole.Arn
@@ -88,7 +85,6 @@ Resources:
   KeyTermsVocabularyFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: concept-explainer-key-terms
       CodeUri: ../lambdas/key_terms_vocabulary/
       Handler: run.sh
       Role: !GetAtt AppBedrockRole.Arn
@@ -106,7 +102,6 @@ Resources:
   StudyTipsNextStepsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: concept-explainer-study-tips
       CodeUri: ../lambdas/study_tips/
       Handler: run.sh
       Role: !GetAtt AppBedrockRole.Arn
@@ -124,7 +119,6 @@ Resources:
   RelatedConceptstoExploreFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: concept-explainer-related-concepts
       CodeUri: ../lambdas/related_concepts/
       Handler: run.sh
       Role: !GetAtt AppBedrockRole.Arn
@@ -142,7 +136,6 @@ Resources:
   PracticeQuizFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: concept-explainer-practice-quiz
       CodeUri: ../lambdas/practice_quiz/
       Handler: run.sh
       Role: !GetAtt AppBedrockRole.Arn
@@ -160,7 +153,6 @@ Resources:
   FollowUpQuestionsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: concept-explainer-follow-up
       CodeUri: ../lambdas/follow_up_questions/
       Handler: run.sh
       Role: !GetAtt AppBedrockRole.Arn
@@ -179,7 +171,6 @@ Resources:
   VisualDiagramFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: concept-explainer-visual-diagram
       CodeUri: ../lambdas/visual_diagram/
       Handler: app.handler
       Role: !GetAtt AppBedrockRole.Arn
@@ -202,7 +193,6 @@ Resources:
   FrontendBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub concept-explainer-frontend-${AWS::AccountId}
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
