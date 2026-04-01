@@ -81,3 +81,8 @@ jobs:
             --query "Stacks[0].Outputs[?OutputKey=='BucketName'].OutputValue" \
             --output text)
           aws s3 sync frontend/ s3://$BUCKET/ --cache-control no-cache --delete
+          WEBSITE_URL=$(aws cloudformation describe-stacks \
+            --stack-name concept-explainer-master-any-topic \
+            --query "Stacks[0].Outputs[?OutputKey=='WebsiteUrl'].OutputValue" \
+            --output text)
+          echo "🌐 App deployed at: $WEBSITE_URL"
