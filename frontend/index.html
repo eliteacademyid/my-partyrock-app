@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concept Explainer: Master Any Topic</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --text: #e2e8f0;
+    --text-muted: #8892b0;
+    --success: #10b981;
+    --error: #ef4444;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px 20px;
+    text-align: center;
+  }
+  header h1 {
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 0; }
+
+  /* ── Input Card ── */
+  .input-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: end;
+  }
+  @media (max-width: 600px) { .input-row { grid-template-columns: 1fr; } }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  input[type="text"], select, textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+  select option { background: var(--surface2); }
+
+  .level-group { min-width: 200px; }
+
+  /* ── Run All Button ── */
+  .run-btn {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 11px 28px;
+    transition: opacity 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .run-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .run-btn:active { transform: translateY(0); }
+  .run-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ── Section Grid ── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ── Output Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .panel-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .panel-icon { font-size: 1.1rem; }
+  .panel-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .panel-body {
+    height: 340px;
+    overflow-y: auto;
+    padding: 16px;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .panel-body::-webkit-scrollbar { width: 5px; }
+  .panel-body::-webkit-scrollbar-track { background: transparent; }
+  .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* auto-height panels */
+  .panel-body.auto-h { height: auto; min-height: 80px; }
+
+  /* ── Markdown rendering ── */
+  .md-line { display: block; animation: fadeIn 0.18s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  .md-h1 { font-size: 1.3rem; font-weight: 700; color: var(--accent2); margin: 12px 0 6px; }
+  .md-h2 { font-size: 1.1rem; font-weight: 700; color: var(--accent2); margin: 10px 0 4px; }
+  .md-h3 { font-size: 1rem; font-weight: 600; color: var(--accent2); margin: 8px 0 4px; }
+  .md-hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+  .md-li { padding-left: 18px; position: relative; }
+  .md-li::before { content: "•"; position: absolute; left: 4px; color: var(--accent); }
+  .md-oli { padding-left: 22px; }
+  .md-code { background: var(--surface2); border-radius: 4px; padding: 1px 5px; font-family: monospace; font-size: 0.88em; color: #f9a8d4; }
+  .cursor { display: inline-block; width: 2px; height: 1em; background: var(--accent2); animation: blink 0.8s step-end infinite; vertical-align: text-bottom; margin-left: 1px; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── Spinner ── */
+  .spinner-wrap { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 0.88rem; padding: 8px 0; }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Error ── */
+  .error-msg { color: var(--error); font-size: 0.88rem; padding: 6px 0; }
+
+  /* ── Diagram panel ── */
+  .diagram-img { width: 100%; border-radius: 8px; display: block; }
+  .diagram-placeholder { color: var(--text-muted); font-size: 0.88rem; text-align: center; padding: 40px 0; }
+
+  /* ── Chat ── */
+  .chat-panel { margin-bottom: 20px; }
+  .chat-messages {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 120px;
+    max-height: 420px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .chat-messages::-webkit-scrollbar { width: 5px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .bubble {
+    max-width: 82%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+  .bubble.user {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .bubble.assistant {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .chat-input-row input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.92rem;
+    padding: 9px 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-input-row input:focus { border-color: var(--accent); }
+  .send-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 9px 18px;
+    transition: opacity 0.2s;
+  }
+  .send-btn:hover { opacity: 0.85; }
+  .send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* ── Opening message ── */
+  .opening-msg {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-style: italic;
+    text-align: center;
+    padding: 16px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧠 Concept Explainer</h1>
+  <p>Welcome to the Concept Explainer! Enter any complex topic or concept, choose your knowledge level, and get a tailored explanation complete with real-world examples and analogies. Use the chat at the bottom to dive deeper with follow-up questions.</p>
+</header>
+
+<div class="container">
+
+  <!-- ── Inputs ── -->
+  <div class="input-card">
+    <div class="input-row">
+      <div>
+        <label for="topic">Topic or Concept</label>
+        <input type="text" id="topic" placeholder="e.g. Quantum entanglement, Blockchain, Neural networks, The Krebs cycle..." />
+      </div>
+      <div class="level-group">
+        <label for="level">Explanation Level</label>
+        <select id="level">
+          <option value="ELI5">ELI5 (Explain Like I'm 5)</option>
+          <option value="Beginner" selected>Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+      </div>
+      <div>
+        <button class="run-btn" id="runAllBtn" onclick="runAll()">▶ Run All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Row 1: Concept Explanation + Real-World Examples ── -->
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header"><span class="panel-icon">📖</span><span class="panel-title">Concept Explanation</span></div>
+      <div class="panel-body" id="out-concept_explanation"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span class="panel-icon">🌍</span><span class="panel-title">Real-World Examples &amp; Analogies</span></div>
+      <div class="panel-body" id="out-real_world_examples_and_analogies"></div>
+    </div>
+  </div>
+
+  <!-- ── Visual Diagram (full width) ── -->
+  <div class="panel" style="margin-bottom:20px;">
+    <div class="panel-header"><span class="panel-icon">🎨</span><span class="panel-title">Visual Diagram</span></div>
+    <div class="panel-body auto-h" id="out-visual_diagram">
+      <div class="diagram-placeholder">Your educational diagram will appear here.</div>
+    </div>
+  </div>
+
+  <!-- ── Row 2: Key Terms + Study Tips ── -->
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header"><span class="panel-icon">📚</span><span class="panel-title">Key Terms &amp; Vocabulary</span></div>
+      <div class="panel-body" id="out-key_terms_vocabulary"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span class="panel-icon">🎯</span><span class="panel-title">Study Tips &amp; Next Steps</span></div>
+      <div class="panel-body" id="out-study_tips_next_steps"></div>
+    </div>
+  </div>
+
+  <!-- ── Row 3: Related Concepts + Practice Quiz ── -->
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header"><span class="panel-icon">🔗</span><span class="panel-title">Related Concepts to Explore</span></div>
+      <div class="panel-body" id="out-related_concepts_to_explore"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span class="panel-icon">✏️</span><span class="panel-title">Practice Quiz</span></div>
+      <div class="panel-body" id="out-practice_quiz"></div>
+    </div>
+  </div>
+
+  <!-- ── Follow-Up Chat ── -->
+  <div class="panel chat-panel">
+    <div class="panel-header"><span class="panel-icon">💬</span><span class="panel-title">Follow-Up Questions</span></div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="opening-msg" id="chatOpening">Great! I've reviewed the concept and I'm ready to help. What questions do you have? Feel free to ask about anything that was unclear, or if you'd like to explore any part of the topic in more detail!</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Ask a follow-up question about the concept..." onkeydown="if(event.key==='Enter')sendChat()" />
+      <button class="send-btn" id="sendBtn" onclick="sendChat()">Send</button>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── URL placeholders (replaced by GitHub Actions sed) ──────────────────────
+const STREAM_URLS = {
+  concept_explanation:              '__URL_CONCEPT_EXPLANATION__',
+  real_world_examples_and_analogies:'__URL_REAL_WORLD_EXAMPLES_AND_ANALOGIES__',
+  key_terms_vocabulary:             '__URL_KEY_TERMS_VOCABULARY__',
+  study_tips_next_steps:            '__URL_STUDY_TIPS_NEXT_STEPS__',
+  related_concepts_to_explore:      '__URL_RELATED_CONCEPTS_TO_EXPLORE__',
+  practice_quiz:                    '__URL_PRACTICE_QUIZ__',
+  follow_up_questions:              '__URL_FOLLOW_UP_QUESTIONS__',
+};
+const DIAGRAM_API = '__DIAGRAM_API_URL__';
+
+// ── Conversation history (persisted in memory) ─────────────────────────────
+let chatHistory = [];
+
+// ── Markdown line renderer ─────────────────────────────────────────────────
+function renderMdLine(raw) {
+  const span = document.createElement('span');
+  span.className = 'md-line';
+
+  if (/^---+$/.test(raw.trim())) {
+    const hr = document.createElement('hr');
+    hr.className = 'md-hr';
+    span.appendChild(hr);
+    return span;
+  }
+
+  let text = raw;
+  let cls = '';
+
+  if (/^### /.test(text))      { text = text.slice(4); cls = 'md-h3'; }
+  else if (/^## /.test(text))  { text = text.slice(3); cls = 'md-h2'; }
+  else if (/^# /.test(text))   { text = text.slice(2); cls = 'md-h1'; }
+  else if (/^[-*] /.test(text)){ text = text.slice(2); cls = 'md-li'; }
+  else if (/^\d+\. /.test(text)){ text = text.replace(/^\d+\. /, ''); cls = 'md-oli'; }
+
+  if (cls) span.classList.add(cls);
+
+  // inline: **bold**, *italic*, `code`
+  text = text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code class="md-code">$1</code>');
+
+  span.innerHTML += text;
+  return span;
+}
+
+// ── Stream a text Lambda URL ───────────────────────────────────────────────
+async function streamToPanel(panelId, url, body) {
+  const panel = document.getElementById(panelId);
+  panel.innerHTML = '';
+
+  // spinner
+  const spinWrap = document.createElement('div');
+  spinWrap.className = 'spinner-wrap';
+  spinWrap.innerHTML = '<div class="spinner"></div><span>Generating…</span>';
+  panel.appendChild(spinWrap);
+
+  let cursor = null;
+
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    panel.innerHTML = '';
+    cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    panel.appendChild(cursor);
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let currentLine = null;
+
+    const flushLine = (lineText) => {
+      if (cursor && cursor.parentNode) cursor.parentNode.removeChild(cursor);
+      const el = renderMdLine(lineText);
+      panel.appendChild(el);
+      currentLine = el;
+      cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      panel.appendChild(cursor);
+      panel.scrollTop = panel.scrollHeight;
+    };
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); // keep incomplete last chunk
+
+      for (const line of lines) {
+        flushLine(line);
+      }
+    }
+
+    // flush remaining
+    if (buffer) flushLine(buffer);
+
+    if (cursor && cursor.parentNode) cursor.parentNode.removeChild(cursor);
+
+  } catch (err) {
+    panel.innerHTML = `<span class="error-msg">⚠ Error: ${err.message}</span>`;
+  }
+}
+
+// ── Fetch diagram (buffered) ───────────────────────────────────────────────
+async function fetchDiagram(topic, level) {
+  const panel = document.getElementById('out-visual_diagram');
+  panel.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div><span>Generating diagram…</span></div>';
+
+  try {
+    const resp = await fetch(DIAGRAM_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic, level }),
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const img = document.createElement('img');
+    img.className = 'diagram-img';
+    img.src = `data:image/png;base64,${data.image}`;
+    img.alt = `Diagram for ${topic}`;
+    panel.innerHTML = '';
+    panel.appendChild(img);
+  } catch (err) {
+    panel.innerHTML = `<span class="error-msg">⚠ Diagram error: ${err.message}</span>`;
+  }
+}
+
+// ── Run All ────────────────────────────────────────────────────────────────
+async function runAll() {
+  const topic = document.getElementById('topic').value.trim();
+  const level = document.getElementById('level').value;
+
+  if (!topic) {
+    alert('Please enter a topic first.');
+    return;
+  }
+
+  const btn = document.getElementById('runAllBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Running…';
+
+  // reset chat
+  chatHistory = [];
+  const chatMessages = document.getElementById('chatMessages');
+  chatMessages.innerHTML = '<div class="opening-msg">Great! I\'ve reviewed the concept and I\'m ready to help. What questions do you have? Feel free to ask about anything that was unclear, or if you\'d like to explore any part of the topic in more detail!</div>';
+
+  const base = { topic, level };
+
+  await Promise.all([
+    streamToPanel('out-concept_explanation',               STREAM_URLS.concept_explanation,               base),
+    streamToPanel('out-real_world_examples_and_analogies', STREAM_URLS.real_world_examples_and_analogies, base),
+    streamToPanel('out-key_terms_vocabulary',              STREAM_URLS.key_terms_vocabulary,              base),
+    streamToPanel('out-study_tips_next_steps',             STREAM_URLS.study_tips_next_steps,             base),
+    streamToPanel('out-related_concepts_to_explore',       STREAM_URLS.related_concepts_to_explore,       base),
+    streamToPanel('out-practice_quiz',                     STREAM_URLS.practice_quiz,                     base),
+    fetchDiagram(topic, level),
+  ]);
+
+  btn.disabled = false;
+  btn.textContent = '▶ Run All';
+}
+
+// ── Chat ───────────────────────────────────────────────────────────────────
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
+
+  const topic = document.getElementById('topic').value.trim();
+  const level = document.getElementById('level').value;
+
+  const chatMessages = document.getElementById('chatMessages');
+  const sendBtn = document.getElementById('sendBtn');
+
+  // remove opening message if present
+  const opening = document.getElementById('chatOpening');
+  if (opening) opening.remove();
+
+  // user bubble
+  const userBubble = document.createElement('div');
+  userBubble.className = 'bubble user';
+  userBubble.textContent = message;
+  chatMessages.appendChild(userBubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  input.value = '';
+  sendBtn.disabled = true;
+
+  // assistant bubble
+  const asstBubble = document.createElement('div');
+  asstBubble.className = 'bubble assistant';
+  chatMessages.appendChild(asstBubble);
+
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  asstBubble.appendChild(cursor);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  let fullReply = '';
+
+  try {
+    const resp = await fetch(STREAM_URLS.follow_up_questions, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic, level, history: chatHistory, message }),
+    });
+
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    const flushLine = (lineText) => {
+      if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+      const el = renderMdLine(lineText);
+      asstBubble.appendChild(el);
+      asstBubble.appendChild(cursor);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      fullReply += chunk;
+      buffer += chunk;
+
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) flushLine(line);
+    }
+    if (buffer) { fullReply += buffer; flushLine(buffer); }
+    if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+
+  } catch (err) {
+    if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+    asstBubble.innerHTML += `<span class="error-msg">⚠ ${err.message}</span>`;
+  }
+
+  // update history
+  chatHistory.push({ role: 'user', content: message });
+  chatHistory.push({ role: 'assistant', content: fullReply });
+
+  sendBtn.disabled = false;
+  input.focus();
+}
+</script>
+</body>
+</html>

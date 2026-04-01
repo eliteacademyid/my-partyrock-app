@@ -1,0 +1,256 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Concept Explainer - Master Any Topic
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 60
+    MemorySize: 256
+
+Resources:
+
+  # ── IAM Role ──────────────────────────────────────────────────────────────
+  AppBedrockRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ConceptExplainerBedrockRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: BedrockInvokePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                  - bedrock:InvokeModelWithResponseStream
+                Resource:
+                  - arn:aws:bedrock:*::foundation-model/us.anthropic.claude-sonnet-4-5-20250929-v1:0
+                  - !Sub arn:aws:bedrock:*:${AWS::AccountId}:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0
+                  - arn:aws:bedrock:*::foundation-model/amazon.nova-canvas-v1:0
+
+  # ── API Gateway (image widget only) ───────────────────────────────────────
+  AppApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'POST,OPTIONS'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'*'"
+
+  # ── Text Streaming Lambdas ─────────────────────────────────────────────────
+  ConceptExplanationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concept-explainer-concept-explanation
+      CodeUri: ../lambdas/concept_explanation/
+      Handler: run.sh
+      Role: !GetAtt AppBedrockRole.Arn
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:27
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          AWS_LWA_INVOKE_MODE: response_stream
+          PORT: "8080"
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+
+  RealWorldExamplesandAnalogiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concept-explainer-real-world-examples
+      CodeUri: ../lambdas/real_world_examples/
+      Handler: run.sh
+      Role: !GetAtt AppBedrockRole.Arn
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:27
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          AWS_LWA_INVOKE_MODE: response_stream
+          PORT: "8080"
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+
+  KeyTermsVocabularyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concept-explainer-key-terms
+      CodeUri: ../lambdas/key_terms_vocabulary/
+      Handler: run.sh
+      Role: !GetAtt AppBedrockRole.Arn
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:27
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          AWS_LWA_INVOKE_MODE: response_stream
+          PORT: "8080"
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+
+  StudyTipsNextStepsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concept-explainer-study-tips
+      CodeUri: ../lambdas/study_tips/
+      Handler: run.sh
+      Role: !GetAtt AppBedrockRole.Arn
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:27
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          AWS_LWA_INVOKE_MODE: response_stream
+          PORT: "8080"
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+
+  RelatedConceptstoExploreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concept-explainer-related-concepts
+      CodeUri: ../lambdas/related_concepts/
+      Handler: run.sh
+      Role: !GetAtt AppBedrockRole.Arn
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:27
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          AWS_LWA_INVOKE_MODE: response_stream
+          PORT: "8080"
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+
+  PracticeQuizFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concept-explainer-practice-quiz
+      CodeUri: ../lambdas/practice_quiz/
+      Handler: run.sh
+      Role: !GetAtt AppBedrockRole.Arn
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:27
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          AWS_LWA_INVOKE_MODE: response_stream
+          PORT: "8080"
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+
+  FollowUpQuestionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concept-explainer-follow-up
+      CodeUri: ../lambdas/follow_up_questions/
+      Handler: run.sh
+      Role: !GetAtt AppBedrockRole.Arn
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:27
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          AWS_LWA_INVOKE_MODE: response_stream
+          PORT: "8080"
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+
+  # ── Image Lambda (buffered, API Gateway) ──────────────────────────────────
+  VisualDiagramFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concept-explainer-visual-diagram
+      CodeUri: ../lambdas/visual_diagram/
+      Handler: app.handler
+      Role: !GetAtt AppBedrockRole.Arn
+      Timeout: 30
+      Events:
+        DiagramPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AppApi
+            Path: /diagram
+            Method: POST
+        DiagramOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AppApi
+            Path: /diagram
+            Method: OPTIONS
+
+  # ── S3 Static Website ─────────────────────────────────────────────────────
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub concept-explainer-frontend-${AWS::AccountId}
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${FrontendBucket}/*
+
+# ── Outputs ───────────────────────────────────────────────────────────────
+Outputs:
+  DiagramApiUrl:
+    Value: !Sub https://${AppApi}.execute-api.${AWS::Region}.amazonaws.com/prod/diagram
+
+  ConceptExplanationUrl:
+    Value: !GetAtt ConceptExplanationFunctionUrl.FunctionUrl
+
+  RealWorldExamplesAndAnalogiesUrl:
+    Value: !GetAtt RealWorldExamplesandAnalogiesFunctionUrl.FunctionUrl
+
+  KeyTermsVocabularyUrl:
+    Value: !GetAtt KeyTermsVocabularyFunctionUrl.FunctionUrl
+
+  StudyTipsNextStepsUrl:
+    Value: !GetAtt StudyTipsNextStepsFunctionUrl.FunctionUrl
+
+  RelatedConceptsToExploreUrl:
+    Value: !GetAtt RelatedConceptstoExploreFunctionUrl.FunctionUrl
+
+  PracticeQuizUrl:
+    Value: !GetAtt PracticeQuizFunctionUrl.FunctionUrl
+
+  FollowUpQuestionsUrl:
+    Value: !GetAtt FollowUpQuestionsFunctionUrl.FunctionUrl
+
+  WebsiteUrl:
+    Value: !GetAtt FrontendBucket.WebsiteURL
+
+  BucketName:
+    Value: !Ref FrontendBucket
